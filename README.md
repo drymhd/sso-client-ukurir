@@ -110,9 +110,10 @@ Berikut adalah variabel `.env` yang dapat Anda sesuaikan kapan saja:
 | `SSO_SERVER_URL` | String | `http://localhost:8000` | URL domain server SSO pusat |
 | `SSO_APP_KEY` | String | *(Wajib)* | Kunci unik modul aplikasi Anda di SSO |
 | `SSO_CLIENT_SECRET` | String | *(Wajib)* | Secret key OAuth untuk memvalidasi JWT |
-| `SSO_REDIRECT_ROUTE` | String | `home` | Nama rute tujuan setelah login berhasil |
-| `SSO_AUTO_PROVISION` | Boolean | `true` | Otomatis buat user baru jika email belum ada |
-| `SSO_USER_MODEL` | Class | `App\Models\User` | Model Eloquent User yang digunakan aplikasi anak |
+| `SSO_REDIRECT_ROUTE` | String | `home` | Nama rute tujuan setelah login berhasil (Web Monolith) |
+| `SSO_FRONTEND_URL` | String | `null` | URL redirect frontend SPA Vue/React (contoh: `http://localhost:5173/auth/callback`) |
+| `SSO_AUTO_PROVISION` | Boolean | `true` | Otomatis buat user baru jika email belum ada (mendukung UUID) |
+| `SSO_USER_MODEL` | Class | `null` (Auto) | Model User. Jika null, otomatis membaca `config('auth.providers.users.model')` |
 
 ---
 
@@ -193,6 +194,40 @@ Package secara otomatis menyediakan rute `/sso/logout`:
     <i class="bi bi-box-arrow-right"></i> Keluar (Logout)
 </a>
 ```
+
+---
+
+### E. Integrasi Frontend SPA (Vue 3 / React / Vite) & REST API
+
+Jika aplikasi anak memiliki frontend terpisah (misalnya Vue 3 di port 5173 atau aplikasi mobile):
+
+1. **Konfigurasi `.env`**:
+   ```env
+   SSO_FRONTEND_URL=http://localhost:5173/auth/callback
+   ```
+
+2. **Alur Otomatis**:
+   - Pengguna dialihkan ke SSO pusat untuk otentikasi.
+   - Setelah validasi berhasil di backend Laravel, endpoint `/sso/callback` otomatis me-redirect browser ke:
+     ```
+     http://localhost:5173/auth/callback?token={BEARER_TOKEN}
+     ```
+   - Komponen Vue (seperti `SsoCallback.vue`) tinggal mengambil query parameter `token`, menyimpannya ke `localStorage` / Pinia store, dan melakukan redirect ke Dashboard!
+
+3. **Request Langsung via REST API (Axios / Postman / Mobile App)**:
+   Jika request dikirim dengan header `Accept: application/json` ke `/sso/callback?token=...`, controller otomatis mengembalikan response JSON:
+   ```json
+   {
+       "success": true,
+       "message": "Berhasil login melalui Single Sign-On (SSO).",
+       "user": {
+           "id": "287a15a9-de01-484e-b33c-224a71776cc9",
+           "name": "Budi Santoso",
+           "email": "budi@saitrans.id"
+       },
+       "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1Ni..."
+   }
+   ```
 
 ---
 

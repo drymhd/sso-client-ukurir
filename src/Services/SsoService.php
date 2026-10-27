@@ -128,10 +128,12 @@ class SsoService
      */
     protected function resolveLocalUser(array $userData, array $payload)
     {
-        $userModelClass = config('sso-client.user_model', 'App\\Models\\User');
+        // Prioritas: config package -> config auth bawaan Laravel -> fallback default
+        $userModelClass = config('sso-client.user_model')
+            ?: config('auth.providers.users.model', 'App\\Models\\User');
 
         if (!class_exists($userModelClass)) {
-            throw new Exception("Model User '{$userModelClass}' tidak ditemukan di aplikasi ini.");
+            throw new Exception("Model User '{$userModelClass}' tidak ditemukan di aplikasi ini. Pastikan model terdefinisi di config/auth.php atau config/sso-client.php.");
         }
 
         $userModel = new $userModelClass();
@@ -157,11 +159,18 @@ class SsoService
                 throw new Exception('Email pengguna tidak ditemukan dalam token SSO untuk auto-provisioning.');
             }
 
-            $user = $userModel->create([
+            $data = [
                 'name'     => $userData['name'],
                 'email'    => $userData['email'],
                 'password' => Hash::make(Str::random(32)), // Random password terenkripsi aman
-            ]);
+            ];
+
+            // Dukungan aman untuk model yang menggunakan Primary Key UUID / non-incrementing string
+            if ($userModel->getKeyType() === 'string' && !$userModel->getIncrementing()) {
+                $data[$userModel->getKeyName()] = (string) Str::uuid();
+            }
+
+            $user = $userModel->create($data);
         } else {
             // Update nama jika ada perubahan di portal pusat
             if (!empty($userData['name']) && $user->name !== $userData['name']) {

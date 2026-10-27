@@ -42,16 +42,23 @@ class InstallSsoClientCommand extends Command
         $appKey = $this->ask('Masukkan SSO App Key aplikasi ini (terdaftar di dashboard SSO)');
         $clientSecret = $this->secret('Masukkan OAuth Client Secret aplikasi ini');
         $redirectRoute = $this->ask('Nama rute tujuan setelah login berhasil (contoh: home atau dashboard)', 'home');
+        $frontendUrl = $this->ask('URL Frontend SPA jika menggunakan Vue/React (opsional, contoh: http://localhost:5173/auth/callback)', '');
 
         // 3. Update file .env
         $this->comment('2. Memperbarui file .env...');
-        $this->updateEnvFile([
+        $envData = [
             'SSO_SERVER_URL'     => $serverUrl,
             'SSO_APP_KEY'        => $appKey,
             'SSO_CLIENT_SECRET'  => $clientSecret,
             'SSO_REDIRECT_ROUTE' => $redirectRoute,
             'SSO_AUTO_PROVISION' => 'true',
-        ]);
+        ];
+
+        if (!empty($frontendUrl)) {
+            $envData['SSO_FRONTEND_URL'] = $frontendUrl;
+        }
+
+        $this->updateEnvFile($envData);
 
         $this->newLine();
         $this->info('✅ Instalasi SSO Client SDK Berhasil!');
