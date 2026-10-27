@@ -1,11 +1,11 @@
 {
-    "name": "saitrans/sso-client",
-    "description": "Official Laravel Single Sign-On (SSO) Client SDK for SAI Enterprise Ecosystem",
+    "name": "drymhd/sso-client-ukurir",
+    "description": "Official Laravel Single Sign-On (SSO) Client SDK for SAI & uKurir Ecosystem",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "PT Sumber Alfaria Trijaya",
+            "name": "drymhd",
             "email": "dev@saitrans.id"
         }
     ],
@@ -15,6 +15,9 @@
         "illuminate/http": "^10.0|^11.0",
         "illuminate/auth": "^10.0|^11.0",
         "firebase/php-jwt": "^6.8"
+    },
+    "replace": {
+        "saitrans/sso-client": "self.version"
     },
     "autoload": {
         "psr-4": {

@@ -1,6 +1,6 @@
-# 🚀 SAI SSO Client SDK for Laravel (`saitrans/sso-client`)
+# 🚀 SAI & uKurir SSO Client SDK for Laravel (`drymhd/sso-client-ukurir`)
 
-Package resmi Laravel untuk integrasi instan ke server **SAI SSO (Single Sign-On)** ekosistem PT Sumber Alfaria Trijaya.
+Package resmi Laravel untuk integrasi instan ke server **SAI SSO (Single Sign-On)** ekosistem PT Sumber Alfaria Trijaya & uKurir.
 
 ---
 
@@ -16,23 +16,22 @@ Package resmi Laravel untuk integrasi instan ke server **SAI SSO (Single Sign-On
 
 ## 📥 Panduan Instalasi di Aplikasi Anak (LMS, Kargo, Finansial, dll.)
 
-### Langkah 1: Tambahkan Package ke `composer.json` Aplikasi Anak
+### Langkah 1: Tambahkan Repository di `composer.json` Aplikasi Anak
 
-Jika package berada di folder internal atau repositori Git, tambahkan repository di `composer.json` aplikasi anak:
+Tambahkan repository GitHub ini di file `composer.json` aplikasi anak:
 
 ```json
 "repositories": [
     {
-        "type": "path",
-        "url": "../sso-sai/packages/saitrans/sso-client"
+        "type": "vcs",
+        "url": "https://github.com/drymhd/sso-client-ukurir.git"
     }
 ]
 ```
-*(Atau gunakan URL Git GitLab jika sudah dipisah ke repo tersendiri: `https://gitlab.com/sai-2024/sso-client.git`)*
 
 Kemudian jalankan:
 ```bash
-composer require saitrans/sso-client
+composer require drymhd/sso-client-ukurir
 ```
 
 ---
